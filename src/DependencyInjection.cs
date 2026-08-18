@@ -4,9 +4,14 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddDependencyInjection(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString =
+            configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException(
+                "DefaultConnection was not found.");
+
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(
-                configuration.GetConnectionString("DefaultConnection")));
+                connectionString));
 
         services.Scan(scan => scan
             .FromAssemblyOf<Program>()
